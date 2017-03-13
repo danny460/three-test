@@ -1,7 +1,6 @@
 (function(){
-	var renderer, scene, camera, control;
-	var stats = new Stats(1);
-	document.body.appendChild( stats.dom );
+	var scene, camera, control, stats;
+	var renderer, composer, renderPass;
 	init();
 	animate();
 
@@ -11,6 +10,7 @@
 		renderer.setSize(innerWidth, innerHeight);
 		renderer.shadowMap.enabled = true;
 		renderer.shadowMap.type = three.PCFSoftShadowMap;
+		
 		scene = new three.Scene();
 		scene.showAxis(5000);
 		camera = new three.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
@@ -18,8 +18,11 @@
 		camera.lookAt(scene.position);
 		control = new three.orbitControl(renderer, camera);
 		control.enable();
+		stats = new Stats(1);
+		document.body.appendChild(stats.dom);
 		document.body.appendChild(renderer.domElement);
 		initScene();
+		initPostProcessing();
 	}
 
 	function initScene(){
@@ -27,6 +30,14 @@
 		var boxMat = new three.MeshLambertMaterial();
 		var box = new three.Mesh(boxGeo, boxMat);
 		scene.add(box);
+	}
+
+	function initPostProcessing(){
+		//postProcessing
+		renderPass = new three.RenderPass(scene, camera);
+		composer = new three.EffectComposer(renderer);
+		composer.add(renderPass);
+		
 	}
 
 	function render(){
